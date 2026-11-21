@@ -14,7 +14,6 @@ export default function Navbar(){
                 <Link href="/events">Events</Link>
                 <Link href="/research">Research</Link>
                 <Link href="/slides">Slides Archive</Link>
-                <Link href="/companies">Companies</Link>
             </div>
 
             {user ? (
