@@ -62,10 +62,6 @@ npm config set registry https://registry.npmmirror.com
 
 _Hosting setup: to be decided after the China test (phase 4)._
 
-## Working together
-
-- Never push to `main`. Make a branch (e.g. `feature/navbar`), push it, and open a Pull Request.
-- Pull `main` before starting new work.
 
 ## References
 
