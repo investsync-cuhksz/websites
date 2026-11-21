@@ -47,7 +47,7 @@ The new site is live and loads from campus, all public pages work with real cont
 
 ## Getting started
 
-Next.js (App Router) + Tailwind CSS, JavaScript. Full plan and open decisions: [`docs/InvestSync Website.pdf`](docs/InvestSync%20Website.pdf).
+Next.js (App Router) + Tailwind CSS, TypeScript. Full plan and open decisions: [`docs/InvestSync Website.pdf`](docs/InvestSync%20Website.pdf). How the code works: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 ```bash
 npm install
