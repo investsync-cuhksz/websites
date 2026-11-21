@@ -1,6 +1,6 @@
 "use client"
 
-import {useState} from "react"
+import {useState, type SubmitEvent} from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/components/AuthProvider"
 
@@ -12,7 +12,7 @@ export default function LoginPage(){
     const router = useRouter()
     const {login} = useAuth()
 
-    function handleSubmit(e){
+    function handleSubmit(e: SubmitEvent<HTMLFormElement>){
         e.preventDefault()
         const user = login(email, password)
         if(!user){

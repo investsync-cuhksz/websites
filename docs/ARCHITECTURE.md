@@ -18,7 +18,7 @@ One Next.js app serves everyone. **Viewers** (no login) and **admins** (logged i
                  └──────────────┬────────────────┘
                                 │  pages never touch storage directly
                  ┌──────────────▼────────────────┐
-                 │  src/lib/  (auth.js, storage)  │  ← the only place that knows
+                 │  src/lib/  (auth.ts, storage)  │  ← the only place that knows
                  └──────────────┬────────────────┘     where data lives
                                 │
             Demo (now): browser localStorage
@@ -27,7 +27,7 @@ One Next.js app serves everyone. **Viewers** (no login) and **admins** (logged i
 
 The key idea: pages only call functions in `src/lib/`. In the demo those functions use localStorage. Later we rewrite only those files to talk to a real database, and no page has to change.
 
-**Stack:** Next.js (App Router), React, Tailwind CSS, JavaScript.
+**Stack:** Next.js (App Router), React, Tailwind CSS, TypeScript (`strict` mode). Pages and components are `.tsx`; plain logic files are `.ts`.
 
 ---
 
@@ -38,20 +38,21 @@ web/
   docs/                    proposal PDF + this file
   public/                  static files (images, logo)
   src/
-    app/                   ROUTES: every folder with a page.js is a URL
-      layout.js            wraps every page: AuthProvider + Navbar
-      page.js              /         Home (placeholder)
+    app/                   ROUTES: every folder with a page.tsx is a URL
+      layout.tsx           wraps every page: AuthProvider + Navbar
+      page.tsx             /         Home (placeholder)
       globals.css          Tailwind import; club colours/fonts go here later
-      login/page.js        /login    admin login form
+      login/page.tsx       /login    admin login form
     components/            reusable pieces (not pages)
-      AuthProvider.jsx     shares "who is logged in" with the whole app
-      Navbar.jsx           top bar, shows login state
+      AuthProvider.tsx     shares "who is logged in" with the whole app
+      Navbar.tsx           top bar, shows login state
     lib/                   logic and data access, no UI
-      auth.js              demo login: checks the account, reads/writes localStorage
+      auth.ts              demo login + the User type; reads/writes localStorage
+  tsconfig.json            TypeScript settings, incl. the @/ → src/ import alias
 ```
 
 Rules of thumb:
-- **`app/`** holds only routes. `app/team/page.js` becomes `/team`, and `app/research/[slug]/page.js` becomes `/research/anything`.
+- **`app/`** holds only routes. `app/team/page.tsx` becomes `/team`, and `app/research/[slug]/page.tsx` becomes `/research/anything`.
 - **`components/`** holds UI used in more than one place.
 - **`lib/`** holds logic with no UI. This is the only code allowed to touch localStorage (later, the database).
 
@@ -63,12 +64,14 @@ Rules of thumb:
 
 | File | Job | Knows about |
 |---|---|---|
-| `src/lib/auth.js` | Checks email + password against the hardcoded demo admin. Saves, reads and removes the logged-in user in localStorage. | localStorage. No React. |
-| `src/components/AuthProvider.jsx` | Holds the current `user` in React state and shares it, plus `login`/`logout`, with every component through Context. | React state |
-| `src/app/login/page.js` | The form. Calls `login()` from `useAuth()`. Shows an error, or redirects to Home. | The form only |
-| `src/components/Navbar.jsx` | Reads `user` from `useAuth()`. Shows "Admin Login" or the admin's name + Logout. | Display only |
+| `src/lib/auth.ts` | Defines the `User` type. Checks email + password against the hardcoded demo admin. Saves, reads and removes the logged-in user in localStorage. | localStorage. No React. |
+| `src/components/AuthProvider.tsx` | Holds the current `user` in React state and shares it, plus `login`/`logout`, with every component through Context. | React state |
+| `src/app/login/page.tsx` | The form. Calls `login()` from `useAuth()`. Shows an error, or redirects to Home. | The form only |
+| `src/components/Navbar.tsx` | Reads `user` from `useAuth()`. Shows "Admin Login" or the admin's name + Logout. | Display only |
 
-`layout.js` wraps every page like this, so every page and the Navbar can call `useAuth()`:
+`useAuth()` throws a clear error if it's called from a component outside `<AuthProvider>`, so that mistake shows up straight away instead of as a confusing `null`.
+
+`layout.tsx` wraps every page like this, so every page and the Navbar can call `useAuth()`:
 
 ```jsx
 <AuthProvider>
@@ -80,7 +83,7 @@ Rules of thumb:
 ### What happens when an admin logs in
 
 ```
-login/page.js          AuthProvider               lib/auth.js            localStorage
+login/page.tsx         AuthProvider               lib/auth.ts            localStorage
 ─────────────          ────────────               ───────────            ────────────
 submit form ──login()──▶ handleLogin ──login()────▶ check email/password
                                                     match? ──setItem────▶ investsync_user = {name, email, role}
@@ -93,7 +96,7 @@ submit form ──login()──▶ handleLogin ──login()────▶ chec
 router.push("/")
 ```
 
-Logout is the same in reverse: `auth.js` removes the key, then `setUser(null)`, and the Navbar switches back to "Admin Login".
+Logout is the same in reverse: `auth.ts` removes the key, then `setUser(null)`, and the Navbar switches back to "Admin Login".
 
 ### Staying logged in after a refresh
 
@@ -124,7 +127,7 @@ const { user } = useAuth()
 ```
 
 - **Most content** (slides, events, team, companies, Join page) is edited in a **popup** on the normal page, so there are no extra URLs.
-- **Articles** need a full-page editor, so they get admin-only routes: `/research/new` and `/research/[slug]/edit`. In the demo those pages check `useAuth()` and send non-admins to `/login`. In the real version a `proxy.js` file (Next.js's newer name for middleware) checks the login cookie before the page loads.
+- **Articles** need a full-page editor, so they get admin-only routes: `/research/new` and `/research/[slug]/edit`. In the demo those pages check `useAuth()` and send non-admins to `/login`. In the real version a `proxy.ts` file (Next.js's newer name for middleware) checks the login cookie before the page loads.
 
 Hiding a button is not security. In the real version every save is also checked on the server.
 
@@ -132,7 +135,7 @@ Hiding a button is not security. In the real version every save is also checked 
 
 ## 5. How content data will work *(planned)*
 
-`src/lib/storage.js` will hold small functions such as `getArticles()`, `saveArticle()` and `deleteArticle()`, one set per content type (articles, members, events, slides, companies, Join info).
+`src/lib/storage.ts` will hold small functions such as `getArticles()`, `saveArticle()` and `deleteArticle()`, one set per content type (articles, members, events, slides, companies, Join info). Each content type gets a TypeScript type (`Article`, `Member`, `Event`, ...) matching the Data table in the proposal, the same way `auth.ts` defines `User`.
 
 - **Demo:** each content type lives under its own localStorage key (`investsync_articles`, `investsync_members`, ...). On first visit it's filled with dummy data from a JSON file.
 - **Real version (phase 4):** the same functions call the database instead. Pages don't change.

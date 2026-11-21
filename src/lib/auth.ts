@@ -2,6 +2,14 @@
 // user lives in localStorage. Later this whole file gets replaced by real auth,
 // and nothing else in the app should touch localStorage for login.
 
+// What we know about a logged-in user (never includes the password).
+// Member and committee roles are on hold, so only "admin" exists for now.
+export type User = {
+  name: string;
+  email: string;
+  role: "admin";
+};
+
 const STORAGE_KEY = "investsync_user";
 
 const admin = {
@@ -9,10 +17,10 @@ const admin = {
   email: "admin@investsync.test",
   password: "77778888",
   role: "admin",
-};
+} as const;
 
 // Returns the logged-in user, or null if the email/password are wrong.
-export function login(email, password) {
+export function login(email: string, password: string): User | null {
   const emailMatches = email.trim() === admin.email;
   const passwordMatches = password === admin.password;
 
@@ -21,24 +29,28 @@ export function login(email, password) {
   }
 
   // Save everything except the password.
-  const user = { name: admin.name, email: admin.email, role: admin.role };
+  const user: User = { 
+    name: admin.name, 
+    email: admin.email, 
+    role: admin.role 
+  };
   localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
   return user;
 }
 
-export function logout() {
+export function logout(): void {
   localStorage.removeItem(STORAGE_KEY);
 }
 
 // Returns the saved user, or null if nobody is logged in.
-export function getCurrentUser() {
+export function getCurrentUser(): User | null {
   const saved = localStorage.getItem(STORAGE_KEY);
   if (!saved) {
     return null;
   }
 
   try {
-    return JSON.parse(saved);
+    return JSON.parse(saved) as User;
   } catch {
     // Saved value is broken (e.g. edited by hand in DevTools): treat as logged out.
     localStorage.removeItem(STORAGE_KEY);
