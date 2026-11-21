@@ -2,7 +2,7 @@
 
 import {useState} from "react"
 import { useRouter } from "next/navigation"
-import { login } from "@/lib/auth"
+import { useAuth } from "@/components/AuthProvider"
 
 export default function LoginPage(){
     const[email, setEmail] = useState("")
@@ -10,6 +10,7 @@ export default function LoginPage(){
     const[error, setError] = useState("")
 
     const router = useRouter()
+    const {login} = useAuth()
 
     function handleSubmit(e){
         e.preventDefault()
