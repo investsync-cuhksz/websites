@@ -8,6 +8,15 @@ export default function Navbar(){
     return (
         <nav className="flex justify-between items-center p-4 border-b">
             <Link href="/">InvestSync</Link>
+
+            <div className="flex items-center gap-4">
+                <Link href="/team">Team</Link>
+                <Link href="/events">Events</Link>
+                <Link href="/research">Research</Link>
+                <Link href="/slides">Slides Archive</Link>
+                <Link href="/companies">Companies</Link>
+            </div>
+
             {user ? (
                 <div className="flex items-center gap-3">
                     <span>{user.name}</span>

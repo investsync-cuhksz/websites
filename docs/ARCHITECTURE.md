@@ -37,17 +37,38 @@ The key idea: pages only call functions in `src/lib/`. In the demo those functio
 web/
   docs/                    proposal PDF + this file
   public/                  static files (images, logo)
+    articles/              static files obtained from previous version of the website
+    brand/
+    events/
   src/
     app/                   ROUTES: every folder with a page.tsx is a URL
       layout.tsx           wraps every page: AuthProvider + Navbar
       page.tsx             /         Home (placeholder)
+      not-found.tsx        pages under construction
       globals.css          Tailwind import; club colours/fonts go here later
       login/page.tsx       /login    admin login form
+      team/page.tsx        board member information
+      events/page.tsx      upcoming and previous events
     components/            reusable pieces (not pages)
       AuthProvider.tsx     shares "who is logged in" with the whole app
       Navbar.tsx           top bar, shows login state
+      EventCard.tsx        event cards, includes event name, time, location
+      icons.tsx            reusable icons (socials, arrows)
+      Logo.tsx             investsync logo, used in navbar & footer
+      MemberCard.tsx       member card for \team, includes photo, role, linkedin
+      PageBanner.tsx       banner (image & title) for pages (/team, /events, etc)
+      PhotoStrip.tsx       horizontal, scrollable gallery for event photos
+      SectionHeading.tsx   sections in \Home
+      SiteFooter.tsx       shared footer with logo, socials
+      SocialLinks.tsx      linkedin, email, IG links
     lib/                   logic and data access, no UI
+      data/
+        dummy.ts
+        events.ts
+        index.ts
       auth.ts              demo login + the User type; reads/writes localStorage
+      format.ts
+      types.ts
   tsconfig.json            TypeScript settings, incl. the @/ → src/ import alias
 ```
 
