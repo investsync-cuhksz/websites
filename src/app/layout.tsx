@@ -1,35 +1,50 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
-import { Geist, Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
+
 import { AuthProvider } from "@/components/AuthProvider";
 import Navbar from "@/components/Navbar";
+import { SiteFooter } from "@/components/SiteFooter";
+import { getSiteSettings } from "@/lib/data";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const cormorant = localFont({
+  src: [
+    { path: "./fonts/Cormorant-Regular.ttf", weight: "400", style: "normal" },
+    { path: "./fonts/Cormorant-Italic.ttf", weight: "400", style: "italic" },
+    { path: "./fonts/Cormorant-Medium.ttf", weight: "500", style: "normal" },
+    { path: "./fonts/Cormorant-SemiBold.ttf", weight: "600", style: "normal" },
+    { path: "./fonts/Cormorant-Bold.ttf", weight: "700", style: "normal" },
+  ],
+  variable: "--font-cormorant",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "InvestSync",
-  description: "InvestSync Student Investment Organization, CUHK-Shenzhen",
+  title: { default: "InvestSync · CUHK-Shenzhen", template: "%s · InvestSync" },
+  description:
+    "InvestSync is the investment & networking organization for students of CUHK-Shenzhen.",
+  icons: { icon: "/images/brand/logo-icon.png" },
 };
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export const viewport: Viewport = { themeColor: "#ffffff" };
+
+export default async function RootLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const settings = await getSiteSettings();
+
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">
+    <html lang="en" className={cormorant.variable}>
+      <body className="flex min-h-dvh flex-col">
         <AuthProvider>
-          <Navbar/>
-          {children}
+          <Navbar />
+          <main id="main" className="flex-1">
+            {children}
+          </main>
+          <SiteFooter settings={settings} />
         </AuthProvider>
       </body>
     </html>
