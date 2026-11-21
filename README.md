@@ -47,7 +47,25 @@ The new site is live and loads from campus, all public pages work with real cont
 
 ## Getting started
 
-_To be added: setup, how to run, and the hosting setup._
+Next.js (App Router) + Tailwind CSS, JavaScript. Full plan and open decisions: [`docs/InvestSync Website.pdf`](docs/InvestSync%20Website.pdf).
+
+```bash
+npm install
+npm run dev   # http://localhost:3000
+```
+
+From mainland China, if `npm install` fails to connect, use the mirror:
+
+```bash
+npm config set registry https://registry.npmmirror.com
+```
+
+_Hosting setup: to be decided after the China test (phase 4)._
+
+## Working together
+
+- Never push to `main`. Make a branch (e.g. `feature/navbar`), push it, and open a Pull Request.
+- Pull `main` before starting new work.
 
 ## References
 
@@ -55,3 +73,4 @@ _To be added: setup, how to run, and the hosting setup._
 - [NUS Investment Society research](https://nusinvest.com/research-publications/)
 - [Bocconi Students Investment Club](https://bsic.it/)
 - [Next.js docs](https://nextjs.org/docs) · [Tailwind CSS docs](https://tailwindcss.com/docs)
+
